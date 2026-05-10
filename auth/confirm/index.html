@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Confirmación de correo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --success: #047857;
+      --danger: #b91c1c;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 36%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 540px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.14);
+      padding: 34px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: var(--primary);
+      font-size: 26px;
+      margin-bottom: 18px;
+      font-weight: bold;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 28px;
+      letter-spacing: -0.03em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 16px;
+    }
+
+    .success {
+      color: var(--success);
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .details {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      color: #475569;
+      word-break: break-word;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 13px 18px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div id="badge" class="badge">…</div>
+    <h1 id="title">Confirmando correo</h1>
+    <p id="message">Espera un momento mientras verificamos tu correo.</p>
+    <div id="details" class="details" style="display:none;"></div>
+    <a
+      id="closeLink"
+      class="button"
+      href="https://flagfootballsala.github.io/"
+      style="display:none;"
+    >
+      Volver al inicio
+    </a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL = "https://intwqskvjxiompbzsmku.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_0gb_ORh41H0Hos7ceCfqVg_Bpn3zvPy";
+
+    function getEl(id) {
+      return document.getElementById(id);
+    }
+
+    function showDetails(text) {
+      const details = getEl("details");
+
+      if (!details) {
+        alert(text);
+        return;
+      }
+
+      details.style.display = "block";
+      details.textContent = text;
+    }
+
+    function setSuccess() {
+      const badge = getEl("badge");
+      const title = getEl("title");
+      const message = getEl("message");
+      const closeLink = getEl("closeLink");
+
+      if (badge) {
+        badge.textContent = "✓";
+        badge.style.background = "#d1fae5";
+        badge.style.color = "#047857";
+      }
+
+      if (title) {
+        title.textContent = "Correo confirmado";
+        title.className = "success";
+      }
+
+      if (message) {
+        message.textContent = "Tu correo fue confirmado correctamente. Gracias.";
+      }
+
+      if (closeLink) {
+        closeLink.style.display = "inline-block";
+      }
+    }
+
+    function setError(text) {
+      const badge = getEl("badge");
+      const title = getEl("title");
+      const message = getEl("message");
+      const closeLink = getEl("closeLink");
+
+      if (badge) {
+        badge.textContent = "!";
+        badge.style.background = "#fee2e2";
+        badge.style.color = "#b91c1c";
+      }
+
+      if (title) {
+        title.textContent = "Error al confirmar";
+        title.className = "danger";
+      }
+
+      if (message) {
+        message.textContent = "No fue posible confirmar tu correo.";
+      }
+
+      showDetails(text || "El enlace expiró, ya fue utilizado o no contiene un token válido.");
+
+      if (closeLink) {
+        closeLink.style.display = "inline-block";
+      }
+    }
+
+    function getQueryAndHashParams() {
+      const queryParams = new URLSearchParams(window.location.search);
+      const hashText = window.location.hash ? window.location.hash.replace(/^#/, "") : "";
+      const hashParams = new URLSearchParams(hashText);
+
+      return {
+        queryParams,
+        hashParams
+      };
+    }
+
+    function getTokenHash(queryParams, hashParams) {
+      return (
+        queryParams.get("token_hash") ||
+        hashParams.get("token_hash") ||
+        ""
+      );
+    }
+
+    function getAuthType(queryParams, hashParams) {
+      return (
+        queryParams.get("type") ||
+        hashParams.get("type") ||
+        "email"
+      );
+    }
+
+    function getAuthError(queryParams, hashParams) {
+      return (
+        queryParams.get("error_description") ||
+        queryParams.get("error") ||
+        hashParams.get("error_description") ||
+        hashParams.get("error") ||
+        ""
+      );
+    }
+
+    async function confirmEmail() {
+      try {
+        const { queryParams, hashParams } = getQueryAndHashParams();
+
+        const tokenHash = getTokenHash(queryParams, hashParams);
+        const type = getAuthType(queryParams, hashParams);
+        const authError = getAuthError(queryParams, hashParams);
+
+        if (!SUPABASE_URL || !SUPABASE_URL.includes(".supabase.co")) {
+          setError("SUPABASE_URL no está configurado correctamente.");
+          return;
+        }
+
+        if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 20) {
+          setError("SUPABASE_ANON_KEY no está configurado correctamente.");
+          return;
+        }
+
+        if (authError) {
+          setError(authError);
+          return;
+        }
+
+        if (!tokenHash) {
+          setError(
+            "El enlace no contiene token_hash.\n\n" +
+            "Esto es normal si abriste esta página manualmente.\n\n" +
+            "Cuando abras el enlace desde el correo, la URL debe tener:\n" +
+            "token_hash=...&type=email"
+          );
+          return;
+        }
+
+        if (!window.supabase || !window.supabase.createClient) {
+          setError(
+            "No se pudo cargar la librería de Supabase desde el CDN.\n\n" +
+            "Verifica que esta línea exista antes del script principal:\n" +
+            "<script src=\"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2\"><\\/script>"
+          );
+          return;
+        }
+
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const { error } = await client.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: type
+        });
+
+        if (error) {
+          setError(error.message || JSON.stringify(error));
+          return;
+        }
+
+        setSuccess();
+      } catch (err) {
+        setError(err && err.message ? err.message : String(err));
+      }
+    }
+
+    window.addEventListener("load", confirmEmail);
+  </script>
+</body>
+</html>

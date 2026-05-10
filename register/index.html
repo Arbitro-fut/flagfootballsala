@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Crear cuenta | Referee Scheduler</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #b91c1c;
+      --success: #047857;
+      --border: #e2e8f0;
+      --input: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 34%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      padding: 24px;
+    }
+
+    .shell {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 0.9fr 1.2fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel,
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.10);
+      padding: 28px;
+    }
+
+    .panel {
+      position: sticky;
+      top: 24px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 32px;
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 24px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .steps {
+      margin-top: 22px;
+      padding-left: 20px;
+      color: #334155;
+      line-height: 1.7;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+      color: #334155;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--input);
+      color: var(--text);
+      padding: 12px 13px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .check {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 8px 0 14px;
+      color: #334155;
+      font-weight: 700;
+    }
+
+    .check input {
+      width: 18px;
+      height: 18px;
+      min-height: auto;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 52px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--primary);
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .button:hover {
+      background: var(--primary-dark);
+    }
+
+    .button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .message.ok {
+      display: block;
+      background: #d1fae5;
+      color: var(--success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .message.error {
+      display: block;
+      background: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 860px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 620px) {
+      body {
+        padding: 14px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel,
+      .card {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <section class="panel">
+      <span class="badge">Registro público</span>
+      <h1>Referee Scheduler</h1>
+      <p>
+        Crea tu solicitud de cuenta. Todas las cuentas nuevas se registran como
+        <strong>Árbitro</strong> por default y quedan pendientes de aprobación.
+      </p>
+
+      <ol class="steps">
+        <li>Captura tus datos.</li>
+        <li>Confirma tu correo electrónico.</li>
+        <li>Espera aprobación del Administrador.</li>
+        <li>Después podrás iniciar sesión en la app.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>Crear cuenta</h2>
+
+      <form id="registerForm">
+        <div class="grid">
+          <div class="field full">
+            <label for="firstNames">Nombre(s)</label>
+            <input id="firstNames" autocomplete="given-name" required />
+          </div>
+
+          <div class="field">
+            <label for="paternalLastName">Apellido paterno</label>
+            <input id="paternalLastName" autocomplete="family-name" required />
+          </div>
+
+          <div class="field">
+            <label for="maternalLastName">Apellido materno</label>
+            <input id="maternalLastName" autocomplete="additional-name" />
+          </div>
+
+          <div class="field">
+            <label for="phone">Número de celular</label>
+            <input id="phone" inputmode="numeric" placeholder="6461234567" required />
+            <div class="hint">Debe quedar como 10 dígitos: lada + número.</div>
+          </div>
+
+          <div class="field">
+            <label for="email">Correo electrónico</label>
+            <input id="email" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="field">
+            <label for="division">División arbitral</label>
+            <select id="division" required>
+              <option value="Primera division">Primera division</option>
+              <option value="Segunda division">Segunda division</option>
+              <option value="Tercera division">Tercera division</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="category">Categoría</label>
+            <select id="category" required>
+              <option value="Regular">Regular</option>
+              <option value="Playoffs">Playoffs</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="password">Contraseña</label>
+            <input id="password" type="password" autocomplete="new-password" required minlength="6" />
+          </div>
+
+          <div class="field">
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <input id="confirmPassword" type="password" autocomplete="new-password" required minlength="6" />
+          </div>
+        </div>
+
+        <label class="check">
+          <input id="coachesTeamsCheck" type="checkbox" />
+          Dirijo uno o más equipos
+        </label>
+
+        <div id="coachedTeamsBox" class="field hidden">
+          <label for="coachedTeams">Equipos dirigidos</label>
+          <textarea id="coachedTeams" placeholder="Escribe un equipo por línea o separados por coma"></textarea>
+        </div>
+
+        <label class="check">
+          <input id="playsTeamsCheck" type="checkbox" />
+          Juego en uno o más equipos
+        </label>
+
+        <div id="playedTeamsBox" class="field hidden">
+          <label for="playedTeams">Equipos en los que juegas</label>
+          <textarea id="playedTeams" placeholder="Escribe un equipo por línea o separados por coma"></textarea>
+        </div>
+
+        <button id="submitButton" class="button" type="submit">Crear solicitud</button>
+
+        <div id="resultMessage" class="message"></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL = "https://intwqskvjxiompbzsmku.supabase.co";
+
+    const SUPABASE_ANON_KEY = "sb_publishable_bqehsBlglIfgGVsdKFdjOA_4LEhRaOQ";
+
+    const CONFIRM_URL = "https://flagfootballsala.github.io/auth/confirm/";
+
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById("registerForm");
+    const submitButton = document.getElementById("submitButton");
+    const resultMessage = document.getElementById("resultMessage");
+
+    const coachesTeamsCheck = document.getElementById("coachesTeamsCheck");
+    const playsTeamsCheck = document.getElementById("playsTeamsCheck");
+    const coachedTeamsBox = document.getElementById("coachedTeamsBox");
+    const playedTeamsBox = document.getElementById("playedTeamsBox");
+
+    coachesTeamsCheck.addEventListener("change", () => {
+      coachedTeamsBox.classList.toggle("hidden", !coachesTeamsCheck.checked);
+    });
+
+    playsTeamsCheck.addEventListener("change", () => {
+      playedTeamsBox.classList.toggle("hidden", !playsTeamsCheck.checked);
+    });
+
+    function showMessage(type, text) {
+      resultMessage.className = "message " + type;
+      resultMessage.textContent = text;
+    }
+
+    function normalizePhone10(value) {
+      let digits = String(value || "").replace(/\D/g, "");
+
+      if (digits.length === 13 && digits.startsWith("521")) {
+        digits = digits.slice(-10);
+      } else if (digits.length === 12 && digits.startsWith("52")) {
+        digits = digits.slice(-10);
+      } else if (digits.length === 12 && digits.startsWith("01")) {
+        digits = digits.slice(-10);
+      } else if (digits.length === 13 && (digits.startsWith("044") || digits.startsWith("045"))) {
+        digits = digits.slice(-10);
+      } else if (digits.length > 10) {
+        digits = digits.slice(-10);
+      }
+
+      return digits;
+    }
+
+    function parseTeams(value) {
+      return String(value || "")
+        .split(/[\n,;|]+/g)
+        .map(x => x.trim())
+        .filter(x => x.length > 0);
+    }
+
+    function getFriendlyError(error) {
+      const text = (error && (error.message || JSON.stringify(error))) || "";
+
+      if (/over_email_send_rate_limit|email rate limit exceeded|too many requests|429/i.test(text)) {
+        return "Hay un actualización en curso.\n\nEspera aproximadamente una hora e intenta nuevamente.";
+      }
+
+      if (/already registered|already been registered|user_already_exists|email already/i.test(text)) {
+        return "Ya existe una cuenta con ese correo. Inicia sesión o usa recuperación de contraseña.";
+      }
+
+      if (/weak_password|password/i.test(text)) {
+        return "La contraseña no cumple los requisitos mínimos. Usa una contraseña más segura.";
+      }
+
+      if (/invalid email|invalid_email/i.test(text)) {
+        return "El correo electrónico no tiene un formato válido.";
+      }
+
+      return text || "No se pudo crear la cuenta. Intenta nuevamente.";
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      resultMessage.className = "message";
+      resultMessage.textContent = "";
+
+      const firstNames = document.getElementById("firstNames").value.trim();
+      const paternalLastName = document.getElementById("paternalLastName").value.trim();
+      const maternalLastName = document.getElementById("maternalLastName").value.trim();
+      const phone = normalizePhone10(document.getElementById("phone").value);
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const division = document.getElementById("division").value;
+      const category = document.getElementById("category").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      const coachedTeams = coachesTeamsCheck.checked
+        ? parseTeams(document.getElementById("coachedTeams").value)
+        : [];
+
+      const playedTeams = playsTeamsCheck.checked
+        ? parseTeams(document.getElementById("playedTeams").value)
+        : [];
+
+      if (!firstNames || !paternalLastName || !email || !password) {
+        showMessage("error", "Captura nombre, apellido paterno, correo y contraseña.");
+        return;
+      }
+
+      if (phone.length !== 10) {
+        showMessage("error", "El celular debe tener 10 dígitos: lada + número.");
+        return;
+      }
+
+      if (password.length < 6) {
+        showMessage("error", "La contraseña debe tener al menos 6 caracteres.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showMessage("error", "La contraseña y la confirmación no coinciden.");
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Creando solicitud...";
+
+      try {
+        const { data: refereeData, error: refereeError } = await client.rpc("submit_referee_registration_public", {
+          p_name: firstNames,
+          p_last_name: [paternalLastName, maternalLastName].filter(Boolean).join(" "),
+          p_division: division,
+          p_category: category,
+          p_phone: phone,
+          p_email: email,
+          p_coach_team: coachedTeams.join(", "),
+          p_player_team: playedTeams.join(", ")
+        });
+
+        if (refereeError) {
+          showMessage("error", getFriendlyError(refereeError));
+          return;
+        }
+
+        if (!refereeData?.ok) {
+          showMessage("error", refereeData?.message || "No se pudo agregar el árbitro al catálogo.");
+          return;
+        }
+
+        const { error } = await client.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            emailRedirectTo: CONFIRM_URL,
+            data: {
+              first_names: firstNames,
+              paternal_last_name: paternalLastName,
+              maternal_last_name: maternalLastName,
+              phone: phone,
+              email: email,
+              requested_role_code: "ARBITRO",
+              coached_teams: coachedTeams,
+              played_teams: playedTeams
+            }
+          }
+        });
+
+        if (error) {
+          const alreadyExists = /already registered|already been registered|user_already_exists|email already/i.test(error.message || "");
+          if (!alreadyExists) {
+            showMessage("error", getFriendlyError(error));
+            return;
+          }
+        }
+
+        showMessage(
+          "ok",
+          "Árbitro agregado correctamente al catálogo.\n\nSi el correo no existía, también se creó la solicitud de cuenta. Revisa el correo para confirmar el acceso."
+        );
+
+        form.reset();
+        coachedTeamsBox.classList.add("hidden");
+        playedTeamsBox.classList.add("hidden");
+      } catch (err) {
+        showMessage("error", getFriendlyError(err));
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Crear solicitud";
+      }
+    });
+  </script>
+</body>
+</html>

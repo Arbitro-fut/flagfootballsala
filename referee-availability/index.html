@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Disponibilidad de árbitros</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero-card">
+      <div>
+        <p class="eyebrow">Arbitro Pro</p>
+        <h1>Registro de disponibilidad</h1>
+        <p class="hero-text">Comparte este link con los árbitros. La disponibilidad quedará registrada en Supabase y será usada por la app al asignar árbitros a los juegos.</p>
+      </div>
+      <div class="status-pill" id="connectionStatus">Listo</div>
+    </section>
+
+    <section class="card" id="formCard">
+      <h2>Disponibilidad para jornada</h2>
+      <div class="field-row">
+        <label for="emailInput">Correo registrado del árbitro</label>
+        <input id="emailInput" type="email" placeholder="correo@ejemplo.com" autocomplete="email" />
+      </div>
+      <div class="field-row">
+        <label for="dateInput">Fecha de jornada</label>
+        <input id="dateInput" type="date" />
+      </div>
+
+      <div class="form-section">
+        <h3>Participación</h3>
+        <div class="radio-grid">
+          <label class="radio-card"><input type="radio" name="participates" value="true" checked /> <span>Sí estoy disponible</span></label>
+          <label class="radio-card danger-radio"><input type="radio" name="participates" value="false" /> <span>No estoy disponible</span></label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Horario general disponible</h3>
+        <div class="block-list two-cols">
+          <div class="field-row">
+            <label for="availableFrom">Desde</label>
+            <input id="availableFrom" type="time" value="08:00" />
+          </div>
+          <div class="field-row">
+            <label for="availableTo">Hasta</label>
+            <input id="availableTo" type="time" value="23:00" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-header small">
+          <div>
+            <h3>Bloqueos personales</h3>
+            <p class="muted">Opcional. Captura periodos en los que no puedes arbitrar dentro de la jornada.</p>
+          </div>
+          <span class="counter" id="blockCounter">0 / 3</span>
+        </div>
+        <div class="block-list" id="blockList"></div>
+      </div>
+
+      <div class="field-row">
+        <label for="notesInput">Comentario opcional</label>
+        <textarea id="notesInput" rows="3" placeholder="Ej. Puedo apoyar después de las 18:00 si es necesario."></textarea>
+      </div>
+
+      <div class="actions sticky-actions">
+        <button id="submitButton" type="button">Enviar disponibilidad</button>
+      </div>
+      <p class="message" id="submitMessage"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
