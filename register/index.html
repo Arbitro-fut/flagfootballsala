@@ -289,21 +289,8 @@
             <input id="email" type="email" autocomplete="email" required />
           </div>
 
-          <div class="field">
-            <label for="division">División arbitral</label>
-            <select id="division" required>
-              <option value="Primera division">Primera division</option>
-              <option value="Segunda division">Segunda division</option>
-              <option value="Tercera division">Tercera division</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="category">Categoría</label>
-            <select id="category" required>
-              <option value="Regular">Regular</option>
-              <option value="Playoffs">Playoffs</option>
-            </select>
+          <div class="field full">
+            <div class="hint">La división arbitral y la categoría serán asignadas posteriormente por el administrador.</div>
           </div>
 
           <div class="field">
@@ -435,8 +422,6 @@
       const maternalLastName = document.getElementById("maternalLastName").value.trim();
       const phone = normalizePhone10(document.getElementById("phone").value);
       const email = document.getElementById("email").value.trim().toLowerCase();
-      const division = document.getElementById("division").value;
-      const category = document.getElementById("category").value;
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
 
@@ -472,11 +457,9 @@
       submitButton.textContent = "Creando solicitud...";
 
       try {
-        const { data: refereeData, error: refereeError } = await client.rpc("submit_referee_registration_public", {
+        const { data: refereeData, error: refereeError } = await client.rpc("submit_referee_registration_public_pending", {
           p_name: firstNames,
           p_last_name: [paternalLastName, maternalLastName].filter(Boolean).join(" "),
-          p_division: division,
-          p_category: category,
           p_phone: phone,
           p_email: email,
           p_coach_team: coachedTeams.join(", "),
