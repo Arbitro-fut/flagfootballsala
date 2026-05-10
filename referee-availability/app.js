@@ -1,6 +1,8 @@
 const config = window.APP_CONFIG || {};
 const client = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
 
+let lockedAvailabilityDate = null;
+
 const els = {
   status: document.getElementById('connectionStatus'),
   email: document.getElementById('emailInput'),
@@ -46,19 +48,36 @@ function applyDateFromLink() {
   const dateFromLink = getQueryParam('date');
 
   if (isIsoDate(dateFromLink)) {
-    els.date.value = dateFromLink;
+    lockedAvailabilityDate = dateFromLink;
+    els.date.value = lockedAvailabilityDate;
+    els.date.disabled = true;
+    els.date.readOnly = true;
+
+    // Refuerza que la fecha no pueda cambiarse manualmente ni por autollenado.
+    els.date.addEventListener('input', () => {
+      els.date.value = lockedAvailabilityDate;
+    });
+
     if (els.dateNotice) {
-      els.dateNotice.textContent = `Esta disponibilidad se registrará para la jornada ${dateFromLink}.`;
+      els.dateNotice.textContent = `Fecha fija recibida desde el link: ${lockedAvailabilityDate}. No puede modificarse desde el formulario.`;
       els.dateNotice.className = 'helper-note ok';
     }
-    return;
+    return true;
   }
 
-  els.date.value = todayMx();
+  lockedAvailabilityDate = null;
+  els.date.value = '';
+  els.date.disabled = true;
+  els.date.readOnly = true;
+  els.submit.disabled = true;
+
   if (els.dateNotice) {
-    els.dateNotice.textContent = 'No se recibió fecha en el link; se usará la fecha seleccionada manualmente.';
+    els.dateNotice.textContent = 'Este formulario requiere una fecha enviada desde la app. Abre el link generado por Arbitro Pro.';
     els.dateNotice.className = 'helper-note warn';
   }
+
+  setMessage('Link inválido: falta el parámetro date=AAAA-MM-DD generado por la app.', 'error');
+  return false;
 }
 
 function renderBlocks() {
@@ -96,11 +115,16 @@ function updateCounter() {
 
 async function submitAvailability() {
   const email = els.email.value.trim().toLowerCase();
-  const date = els.date.value;
+  const date = lockedAvailabilityDate;
   const participates = selectedParticipates();
 
-  if (!email || !date) {
-    setMessage('Captura correo y fecha de jornada.', 'error');
+  if (!date) {
+    setMessage('Link inválido: la fecha debe venir fija desde la app.', 'error');
+    return;
+  }
+
+  if (!email) {
+    setMessage('Captura el correo registrado del árbitro.', 'error');
     return;
   }
 

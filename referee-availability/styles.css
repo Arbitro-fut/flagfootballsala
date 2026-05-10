@@ -361,3 +361,11 @@ button.secondary:hover {
   color: #92400e;
   font-weight: 700;
 }
+
+.fixed-date-input {
+  cursor: not-allowed;
+  opacity: 1;
+  background: #eef2f7;
+  color: #111827;
+  font-weight: 700;
+}
