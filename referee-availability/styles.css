@@ -345,3 +345,19 @@ button.secondary:hover {
     grid-template-columns: 1fr;
   }
 }
+
+.helper-note {
+  margin: 6px 0 0;
+  font-size: 0.86rem;
+  color: #64748b;
+}
+
+.helper-note.ok {
+  color: #166534;
+  font-weight: 700;
+}
+
+.helper-note.warn {
+  color: #92400e;
+  font-weight: 700;
+}

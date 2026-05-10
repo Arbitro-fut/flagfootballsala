@@ -5,6 +5,7 @@ const els = {
   status: document.getElementById('connectionStatus'),
   email: document.getElementById('emailInput'),
   date: document.getElementById('dateInput'),
+  dateNotice: document.getElementById('dateNotice'),
   availableFrom: document.getElementById('availableFrom'),
   availableTo: document.getElementById('availableTo'),
   blockList: document.getElementById('blockList'),
@@ -30,6 +31,34 @@ function todayMx() {
   const mm = String(now.getMonth() + 1).padStart(2, '0');
   const dd = String(now.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
+}
+
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+function isIsoDate(text) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(text || '');
+}
+
+function applyDateFromLink() {
+  const dateFromLink = getQueryParam('date');
+
+  if (isIsoDate(dateFromLink)) {
+    els.date.value = dateFromLink;
+    if (els.dateNotice) {
+      els.dateNotice.textContent = `Esta disponibilidad se registrará para la jornada ${dateFromLink}.`;
+      els.dateNotice.className = 'helper-note ok';
+    }
+    return;
+  }
+
+  els.date.value = todayMx();
+  if (els.dateNotice) {
+    els.dateNotice.textContent = 'No se recibió fecha en el link; se usará la fecha seleccionada manualmente.';
+    els.dateNotice.className = 'helper-note warn';
+  }
 }
 
 function renderBlocks() {
@@ -123,7 +152,7 @@ function boot() {
     setMessage('Falta configurar Supabase en config.js.', 'error');
     return;
   }
-  els.date.value = todayMx();
+  applyDateFromLink();
   renderBlocks();
   els.submit.addEventListener('click', submitAvailability);
   els.status.textContent = 'Listo';
